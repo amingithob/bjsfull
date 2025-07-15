@@ -174,15 +174,50 @@ return `${effectiveBet}\t${profit}\t${h.decision}\t${playerTotal}\t${dealerTotal
         />
       </div>
 
-      <div style={{ marginTop: 20 }}>
-        <h3>🧠 Decision:</h3>
-        {decisions.map(d => <button key={d} onClick={() => setDecision(d)}>{d}</button>)}
-      </div>
+      {/* 🧠 Decision */}
+<div style={{ marginTop: 20 }}>
+  <h3>🧠 Decision:</h3>
+  {decisions.map(d => (
+    <button
+      key={d}
+      onClick={() => setDecision(d)}
+      style={{
+        margin: 4,
+        padding: '6px 12px',
+        backgroundColor: decision === d ? '#4CAF50' : '#f0f0f0',
+        color: decision === d ? 'white' : 'black',
+        border: '1px solid #ccc',
+        borderRadius: 4,
+        cursor: 'pointer'
+      }}
+    >
+      {d}
+    </button>
+  ))}
+</div>
 
-      <div style={{ marginTop: 10 }}>
-        <h3>🎯 Result:</h3>
-        {results.map(r => <button key={r} onClick={() => setResult(r)}>{r}</button>)}
-      </div>
+{/* 🎯 Result */}
+<div style={{ marginTop: 10 }}>
+  <h3>🎯 Result:</h3>
+  {results.map(r => (
+    <button
+      key={r}
+      onClick={() => setResult(r)}
+      style={{
+        margin: 4,
+        padding: '6px 12px',
+        backgroundColor: result === r ? '#2196F3' : '#f0f0f0',
+        color: result === r ? 'white' : 'black',
+        border: '1px solid #ccc',
+        borderRadius: 4,
+        cursor: 'pointer'
+      }}
+    >
+      {r}
+    </button>
+  ))}
+</div>
+
 
       <div style={{ marginTop: 20 }}>
         <button onClick={handleSubmit}>✅ Submit Hand</button>
