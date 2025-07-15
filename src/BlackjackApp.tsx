@@ -96,7 +96,7 @@ export default function BlackjackApp() {
       profit = -bet;
     }
 
-    return `${dealerTotal} | ${playerTotal} | ${decision} | ${profit} | ${bet}`;
+    return `${dealerTotal}\t${playerTotal}\t${decision}\t${profit}\t${bet}`;
   });
 
   const output = lines.join("\n");
