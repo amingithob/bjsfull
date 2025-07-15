@@ -25,6 +25,7 @@ export default function BlackjackApp() {
   const multiplier = h.decision === "Double" ? 2 : 1;
   return sum + baseBet * multiplier;
 }, 0);
+  
   const totalProfit = hands.reduce((sum, h) => {
   const bet = Number(h.bet);
   const multiplier = h.decision === "Double" ? 2 : 1;
@@ -32,10 +33,14 @@ export default function BlackjackApp() {
   const cash = Number(h.cashout);
 
   if (h.decision === "Cashout") return sum + (cash - bet);
-  if (h.result === "Win") return sum + effectiveBet;
+  if (h.result === "Win") {
+    if (h.decision === "Blackjack") return sum + bet * 1.5;
+    return sum + effectiveBet;
+  }
   if (h.result === "Lose") return sum - effectiveBet;
-  return sum; // Push
+  return sum;
 }, 0);
+
 
   const rtp = totalBet > 0 ? ((totalProfit + totalBet) / totalBet * 100).toFixed(1) : "0";
   const avgProfit = hands.length > 0 ? (totalProfit / hands.length).toFixed(2) : "0";
@@ -205,6 +210,7 @@ if (decision === "Cashout") {
             <div>
             Bet: €{Number(h.bet) * (h.decision === "Double" ? 2 : 1)}
             </div>
+            
             <div>Cashout: €{h.cashout}</div>
 
             <div>Decision: {h.decision}</div>
