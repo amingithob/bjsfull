@@ -118,7 +118,27 @@ if (decisionUsed === "Cashout") {
   profit = 0;
 }
     
-return `${effectiveBet}\t${profit}\t${decisionUsed}\t${playerTotal}\t${dealerTotal}`;
+const decisionLabel = h.result === "Push" ? "Push" : h.decision;
+let tag = "";
+
+if (h.result === "Push") {
+  tag = "push";
+} else if (h.decision === "Double") {
+  tag = h.result === "Win" ? "ddw" : h.result === "Lose" ? "ddl" : "ddp";
+} else if (h.decision === "Cashout") {
+  tag = h.result === "Win" ? "cow" : "col";
+} else if (h.decision === "Blackjack") {
+  tag = "bj";
+} else if (h.result === "Win") {
+  tag = "win";
+} else if (h.result === "Lose") {
+  tag = "los";
+} else {
+  tag = decisionLabel.toLowerCase();
+}
+
+return `${effectiveBet}\t${profit}\t${decisionLabel}\t${playerTotal}\t${dealerTotal}\t${tag}`;
+
 
     
   });
