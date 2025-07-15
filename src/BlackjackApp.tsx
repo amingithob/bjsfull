@@ -193,11 +193,11 @@ export default function BlackjackApp() {
             <div>Decision: {h.decision}</div>
             <div>Result: {h.result}</div>
           </div> 
-      <button onClick={generateExportText} style={{ marginTop: 20 }}>
-  📋 Copy Excel Output
-</button>
 
         ))}
+              <button onClick={generateExportText} style={{ marginTop: 20 }}>
+  📋 Copy Excel Output
+</button>
       </div>
     </div>
   );
