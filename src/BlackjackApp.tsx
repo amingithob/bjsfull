@@ -75,7 +75,7 @@ export default function BlackjackApp() {
     setResult("");
   };
 
-  const generateExportText = () => {
+const generateExportText = () => {
   const hands = JSON.parse(localStorage.getItem("blackjack_hands") || "[]");
   const lines = hands.map((h) => {
     const dealerCards = h.dealer.split(" ");
@@ -98,31 +98,30 @@ export default function BlackjackApp() {
 
     const dealerTotal = sum(dealerCards);
     const playerTotal = sum(playerCards);
-   const rawBet = Number(h.bet);
-const isDouble = h.decision === "Double";
-const bet = isDouble ? rawBet * 2 : rawBet;
-const decision = h.decision;
+    const bet = Number(h.bet);
+    const multiplier = h.decision === "Double" ? 2 : 1;
+    const effectiveBet = bet * multiplier;
 
-let profit = 0;
-    const multiplier = decision === "Double" ? 2 : 1;
-const effectiveBet = bet * multiplier;
-if (decision === "Cashout") {
-  profit = Number(h.cashout) - rawBet;
-} else if (h.result === "Win") {
-  profit = effectiveBet;
-} else if (h.result === "Lose") {
-  profit = -effectiveBet;
-}
+    let profit = 0;
+    if (h.decision === "Cashout") {
+      profit = Number(h.cashout) - bet;
+    } else if (h.decision === "Blackjack") {
+      profit = bet * 1.5;
+    } else if (h.result === "Win") {
+      profit = effectiveBet;
+    } else if (h.result === "Lose") {
+      profit = -effectiveBet;
+    }
 
-
-    return `${dealerTotal}\t${playerTotal}\t${decision}\t${profit}\t${bet}`;
+    return `${dealerTotal} ${playerTotal} ${h.decision} ${profit} ${effectiveBet}`;
   });
 
   const output = lines.join("\n");
   navigator.clipboard.writeText(output).then(() => {
-    alert("📋 خروجی با فرمت Excel کپی شد!");
+    alert("📋 خروجی کپی شد!");
   });
 };
+
 
   const cardSum = (cards) => {
     const values = cards.map(c => c === "A" ? 11 : ["K", "Q", "J"].includes(c) ? 10 : parseInt(c));
