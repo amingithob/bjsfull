@@ -193,8 +193,6 @@ export default function BlackjackApp() {
         <p>Total Profit: €{totalProfit}</p>
         <p>Avg Profit per Hand: €{avgProfit}</p>
         <p>RTP: {rtp}%</p>
-        <p>Running Count: {runningCount}</p>
-        <p>True Count: {trueCount}</p>
       </div>
 
       <hr style={{ margin: '20px 0' }} />
@@ -207,6 +205,78 @@ export default function BlackjackApp() {
     const finalBet = isDouble ? bet * 2 : bet;
     const blackjackProfit = isBlackjack ? bet * 1.5 : null;
 
+    const generateExportText = () => {
+    const hands = JSON.parse(localStorage.getItem("blackjack_hands") || "[]");
+    const lines = hands.map((h) => {
+      const dealerCards = h.dealer.split(" ");
+      const playerCards = h.player.split(" ");
+
+      const sum = (cards: string[]) => {
+        const values = cards.map(c => {
+          if (c === "A") return 11;
+          if (["K", "Q", "J"].includes(c)) return 10;
+          return parseInt(c);
+        });
+        let total = values.reduce((a, b) => a + b, 0);
+        let aces = cards.filter(c => c === "A").length;
+        while (total > 21 && aces > 0) {
+          total -= 10;
+          aces--;
+        }
+        return total;
+      };
+
+      const dealerTotal = sum(dealerCards);
+      const playerTotal = sum(playerCards);
+      const bet = Number(h.bet);
+      const multiplier = h.decision === "Double" ? 2 : 1;
+      const effectiveBet = bet * multiplier;
+
+      let profit = 0;
+      let decisionUsed = h.decision;
+
+      if (decisionUsed === "Cashout") {
+        profit = Number(h.cashout);
+      } else if (h.result === "Win") {
+        if (decisionUsed === "Double") profit = bet * 2;
+        else if (decisionUsed === "Blackjack") profit = bet * 1.5;
+        else profit = bet;
+      } else if (h.result === "Lose") {
+        if (decisionUsed === "Double") profit = -bet * 2;
+        else profit = -bet;
+      } else if (h.result === "Push") {
+        profit = 0;
+      }
+
+      const decisionLabel = h.result === "Push" ? "Push" : h.decision;
+      let tag = "";
+
+      if (h.result === "Push") {
+        tag = "push";
+      } else if (h.decision === "Double") {
+        tag = h.result === "Win" ? "ddw" : h.result === "Lose" ? "ddl" : "ddp";
+      } else if (h.decision === "Cashout") {
+        tag = h.result === "Win" ? "cow" : "col";
+      } else if (h.decision === "Blackjack") {
+        tag = "bj";
+      } else if (h.result === "Win") {
+        tag = "win";
+      } else if (h.result === "Lose") {
+        tag = "los";
+      } else {
+        tag = decisionLabel.toLowerCase();
+      }
+
+      return `${effectiveBet}\t${profit}\t${decisionLabel}\t${playerTotal}\t${dealerTotal}\t${tag}`;
+    });
+
+    const output = lines.join("\n");
+    navigator.clipboard.writeText(output).then(() => {
+      alert("📋 خروجی کپی شد!");
+    });
+  };
+
+  
     return (
       <div key={h.id} style={{ border: '1px solid #ccc', marginBottom: 8, padding: 6 }}>
         <div>ID: {h.id}</div>
