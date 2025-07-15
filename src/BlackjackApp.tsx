@@ -155,13 +155,27 @@ return `${effectiveBet}\t${profit}\t${h.decision}\t${playerTotal}\t${dealerTotal
       <div>
         <h3>🎴 Player Cards ({cardSum(playerCards)}):</h3>
         <div>{playerCards.map((c, i) => <button key={i} onClick={() => removeCard(i, false)}>{c} ❌</button>)}</div>
-        {cardValues.map(c => <button key={c} onClick={() => addCard(c, false)}>{c}</button>)}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+  {cardValues.map(c => (
+    <button key={c} onClick={() => addCard(c, false)}>
+      {c}
+    </button>
+  ))}
+</div>
+
       </div>
 
       <div style={{ marginTop: 10 }}>
         <h3>🃏 Dealer Cards ({cardSum(dealerCards)}):</h3>
         <div>{dealerCards.map((c, i) => <button key={i} onClick={() => removeCard(i, true)}>{c} ❌</button>)}</div>
-        {cardValues.map(c => <button key={c} onClick={() => addCard(c, true)}>{c}</button>)}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+  {cardValues.map(c => (
+    <button key={c} onClick={() => addCard(c, true)}>
+      {c}
+    </button>
+  ))}
+</div>
+
       </div>
 
       <div style={{ marginTop: 20 }}>
