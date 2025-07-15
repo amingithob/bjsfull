@@ -113,7 +113,7 @@ const generateExportText = () => {
       profit = -effectiveBet;
     }
     
-  return `t${bet}\t${profit}\t${decision}\t${playerTotal}\${dealerTotal}`;
+  return `t${effectiveBet}\t${profit}\t${h.decision}\t${playerTotal}\t${dealerTotal}`;
     
   });
 
