@@ -108,7 +108,6 @@ let decisionUsed = h.decision;
 
 if (decisionUsed === "Cashout") {
   profit = Number(h.cashout); 
-}
 } else if (h.result === "Win") {
   if (decisionUsed === "Double") profit = bet * 2;
   else if (decisionUsed === "Blackjack") profit = bet * 1.5;
