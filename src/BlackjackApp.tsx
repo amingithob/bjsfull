@@ -1,4 +1,3 @@
-// BlackjackApp.tsx (SIMPLE VERSION with native HTML elements + Card Counting)
 import React, { useState } from 'react';
 
 let handId = 1;
@@ -90,128 +89,12 @@ export default function BlackjackApp() {
     return total;
   };
 
-  return (
-    <div style={{ padding: 20, fontFamily: 'sans-serif' }}>
-      <h2>💰 Bet Amount</h2>
-      <input
-        type="number"
-        value={betAmount}
-        onChange={(e) => setBetAmount(e.target.value)}
-        style={{ padding: '4px 8px', marginBottom: 12 }}
-      />
-
-      <h3>🧮 Deck Count</h3>
-      <input
-        type="number"
-        value={deckCount}
-        onChange={(e) => setDeckCount(Number(e.target.value))}
-        style={{ padding: '4px 8px', marginBottom: 12 }}
-        min={1}
-        max={10}
-      />
-
-      <button onClick={() => {
-        if (confirm("Clear all data?")) {
-          setHands([]);
-          localStorage.removeItem("blackjack_hands");
-          handId = 1;
-        }
-      }}>🗑️ New Session</button>
-
-      <hr style={{ margin: '20px 0' }} />
-
-      <div>
-        <h3>🎴 Player Cards ({cardSum(playerCards)}):</h3>
-        <div>{playerCards.map((c, i) => <button key={i} onClick={() => removeCard(i, false)}>{c} ❌</button>)}</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-          {cardValues.map(c => (
-            <button key={c} onClick={() => addCard(c, false)}>{c}</button>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ marginTop: 10 }}>
-        <h3>🃏 Dealer Cards ({cardSum(dealerCards)}):</h3>
-        <div>{dealerCards.map((c, i) => <button key={i} onClick={() => removeCard(i, true)}>{c} ❌</button>)}</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-          {cardValues.map(c => (
-            <button key={c} onClick={() => addCard(c, true)}>{c}</button>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ marginTop: 20 }}>
-        <h3>💸 Cashout (optional):</h3>
-        <input
-          type="number"
-          value={cashoutValue}
-          onChange={(e) => setCashoutValue(e.target.value)}
-          placeholder="Cashout (€)"
-        />
-      </div>
-
-      {/* 📈 Count Info */}
-<div style={{ marginTop: 20 }}>
-  <h3>📈 Count Info:</h3>
-  <p>Running Count: {runningCount}</p>
-  <p>True Count: {trueCount.toFixed(2)}</p>
-</div>
-
-
-      <div style={{ marginTop: 20 }}>
-        <h3>🧠 Decision:</h3>
-        {decisions.map(d => (
-          <button
-            key={d}
-            onClick={() => setDecision(d)}
-            style={{ margin: 4, padding: '6px 12px', backgroundColor: decision === d ? '#4CAF50' : '#f0f0f0' }}
-          >{d}</button>
-        ))}
-      </div>
-
-      <div style={{ marginTop: 10 }}>
-        <h3>🎯 Result:</h3>
-        {results.map(r => (
-          <button
-            key={r}
-            onClick={() => setResult(r)}
-            style={{ margin: 4, padding: '6px 12px', backgroundColor: result === r ? '#2196F3' : '#f0f0f0' }}
-          >{r}</button>
-        ))}
-      </div>
-
-      <div style={{ marginTop: 20 }}>
-        <button onClick={handleSubmit}>✅ Submit Hand</button>
-      </div>
-
-      <hr style={{ margin: '20px 0' }} />
-
-      <div>
-        <h3>📊 Stats</h3>
-        <p>Total Hands: {hands.length}</p>
-        <p>Total Bet: €{totalBet}</p>
-        <p>Total Profit: €{totalProfit}</p>
-        <p>Avg Profit per Hand: €{avgProfit}</p>
-        <p>RTP: {rtp}%</p>
-      </div>
-
-      <hr style={{ margin: '20px 0' }} />
-<div>
-  <h3>📜 Hand History</h3>
-  {hands.map(h => {
-    const bet = Number(h.bet);
-    const isDouble = h.decision === "Double";
-    const isBlackjack = h.decision === "Blackjack";
-    const finalBet = isDouble ? bet * 2 : bet;
-    const blackjackProfit = isBlackjack ? bet * 1.5 : null;
-
-    const generateExportText = () => {
+  const generateExportText = () => {
     const hands = JSON.parse(localStorage.getItem("blackjack_hands") || "[]");
     const lines = hands.map((h) => {
       const dealerCards = h.dealer.split(" ");
       const playerCards = h.player.split(" ");
-
-      const sum = (cards: string[]) => {
+      const sum = (cards) => {
         const values = cards.map(c => {
           if (c === "A") return 11;
           if (["K", "Q", "J"].includes(c)) return 10;
@@ -233,7 +116,7 @@ export default function BlackjackApp() {
       const effectiveBet = bet * multiplier;
 
       let profit = 0;
-      let decisionUsed = h.decision;
+      const decisionUsed = h.decision;
 
       if (decisionUsed === "Cashout") {
         profit = Number(h.cashout);
@@ -276,28 +159,93 @@ export default function BlackjackApp() {
     });
   };
 
-  
-    return (
-      <div key={h.id} style={{ border: '1px solid #ccc', marginBottom: 8, padding: 6 }}>
-        <div>ID: {h.id}</div>
-        <div>Player: {h.player} ({cardSum(h.player.split(" "))})</div>
-        <div>Dealer: {h.dealer} ({cardSum(h.dealer.split(" "))})</div>
-        <div>Bet: €{finalBet}</div>
-        <div>
-          Result: {h.result}
-          {isBlackjack && ` (+€${blackjackProfit})`}
-        </div>
-        <div>Cashout: €{h.cashout}</div>
-        <div>Decision: {h.decision}</div>
+  return (
+    <div style={{ padding: 20, fontFamily: 'sans-serif' }}>
+      <h2>💰 Bet Amount</h2>
+      <input type="number" value={betAmount} onChange={(e) => setBetAmount(e.target.value)} />
+
+      <h3>🧮 Deck Count</h3>
+      <input type="number" value={deckCount} onChange={(e) => setDeckCount(Number(e.target.value))} min={1} max={10} />
+
+      <button onClick={() => {
+        if (confirm("Clear all data?")) {
+          setHands([]);
+          localStorage.removeItem("blackjack_hands");
+          handId = 1;
+        }
+      }}>🗑️ New Session</button>
+
+      <div>
+        <h3>📈 Count Info</h3>
+        <p>Running Count: {runningCount}</p>
+        <p>True Count: {trueCount}</p>
       </div>
-    );
-  })}
 
-  <button onClick={generateExportText} style={{ marginTop: 20 }}>
-    📋 Copy Excel Output
-  </button>
-</div>
+      <div>
+        <h3>🎴 Player Cards ({cardSum(playerCards)}):</h3>
+        {playerCards.map((c, i) => <button key={i} onClick={() => removeCard(i, false)}>{c} ❌</button>)}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+          {cardValues.map(c => (
+            <button key={c} onClick={() => addCard(c, false)}>{c}</button>
+          ))}
+        </div>
+      </div>
 
+      <div>
+        <h3>🃏 Dealer Cards ({cardSum(dealerCards)}):</h3>
+        {dealerCards.map((c, i) => <button key={i} onClick={() => removeCard(i, true)}>{c} ❌</button>)}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+          {cardValues.map(c => (
+            <button key={c} onClick={() => addCard(c, true)}>{c}</button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h3>💸 Cashout (optional)</h3>
+        <input type="number" value={cashoutValue} onChange={(e) => setCashoutValue(e.target.value)} />
+      </div>
+
+      <div>
+        <h3>🧠 Decision</h3>
+        {decisions.map(d => (
+          <button key={d} onClick={() => setDecision(d)} style={{ backgroundColor: decision === d ? '#4CAF50' : '' }}>{d}</button>
+        ))}
+      </div>
+
+      <div>
+        <h3>🎯 Result</h3>
+        {results.map(r => (
+          <button key={r} onClick={() => setResult(r)} style={{ backgroundColor: result === r ? '#2196F3' : '' }}>{r}</button>
+        ))}
+      </div>
+
+      <button onClick={handleSubmit}>✅ Submit Hand</button>
+
+      <div>
+        <h3>📊 Stats</h3>
+        <p>Total Hands: {hands.length}</p>
+        <p>Total Bet: €{totalBet}</p>
+        <p>Total Profit: €{totalProfit}</p>
+        <p>Avg Profit: €{avgProfit}</p>
+        <p>RTP: {rtp}%</p>
+      </div>
+
+      <div>
+        <h3>📜 Hand History</h3>
+        {hands.map(h => (
+          <div key={h.id} style={{ border: '1px solid #ccc', margin: 4, padding: 6 }}>
+            <div>Player: {h.player}</div>
+            <div>Dealer: {h.dealer}</div>
+            <div>Decision: {h.decision}</div>
+            <div>Result: {h.result}</div>
+            <div>Bet: {h.bet}</div>
+            <div>Cashout: {h.cashout}</div>
+          </div>
+        ))}
+
+        <button onClick={generateExportText}>📋 Copy Excel Output</button>
+      </div>
     </div>
   );
 }
