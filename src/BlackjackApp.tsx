@@ -85,20 +85,20 @@ export default function BlackjackApp() {
 
     const dealerTotal = sum(dealerCards);
     const playerTotal = sum(playerCards);
-    const bet = Number(h.bet);
-    const decision = h.decision;
-    // در حالت Double، بت دوبرابر می‌شه
-    if (decision === "Double") {
-    bet = bet * 2;
-    }
-    let profit = 0;
-    if (decision === "Cashout") {
-      profit = Number(h.cashout) - bet;
-    } else if (h.result === "Win") {
-      profit = bet;
-    } else if (h.result === "Lose") {
-      profit = -bet;
-    }
+   const rawBet = Number(h.bet);
+const isDouble = h.decision === "Double";
+const bet = isDouble ? rawBet * 2 : rawBet;
+const decision = h.decision;
+
+let profit = 0;
+if (decision === "Cashout") {
+  profit = Number(h.cashout) - rawBet;
+} else if (h.result === "Win") {
+  profit = bet;
+} else if (h.result === "Lose") {
+  profit = -bet;
+}
+
 
     return `${dealerTotal}\t${playerTotal}\t${decision}\t${profit}\t${bet}`;
   });
@@ -192,8 +192,11 @@ export default function BlackjackApp() {
             <div>ID: {h.id}</div>
             <div>Player: {h.player} ({cardSum(h.player.split(" "))})</div>
             <div>Dealer: {h.dealer} ({cardSum(h.dealer.split(" "))})</div>
-            <div>Bet: €{h.bet}</div>
+            <div>
+            Bet: €{Number(h.bet) * (h.decision === "Double" ? 2 : 1)}
+            </div>
             <div>Cashout: €{h.cashout}</div>
+
             <div>Decision: {h.decision}</div>
             <div>Result: {h.result}</div>
           </div> 
