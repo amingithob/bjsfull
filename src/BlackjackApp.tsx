@@ -62,6 +62,49 @@ export default function BlackjackApp() {
     setResult("");
   };
 
+  const generateExportText = () => {
+  const hands = JSON.parse(localStorage.getItem("blackjack_hands") || "[]");
+  const lines = hands.map((h) => {
+    const dealerCards = h.dealer.split(" ");
+    const playerCards = h.player.split(" ");
+
+    const sum = (cards: string[]) => {
+      const values = cards.map(c => {
+        if (c === "A") return 11;
+        if (["K", "Q", "J"].includes(c)) return 10;
+        return parseInt(c);
+      });
+      let total = values.reduce((a, b) => a + b, 0);
+      let aces = cards.filter(c => c === "A").length;
+      while (total > 21 && aces > 0) {
+        total -= 10;
+        aces--;
+      }
+      return total;
+    };
+
+    const dealerTotal = sum(dealerCards);
+    const playerTotal = sum(playerCards);
+    const bet = Number(h.bet);
+    const decision = h.decision;
+    let profit = 0;
+    if (decision === "Cashout") {
+      profit = Number(h.cashout) - bet;
+    } else if (h.result === "Win") {
+      profit = bet;
+    } else if (h.result === "Lose") {
+      profit = -bet;
+    }
+
+    return `${dealerTotal} | ${playerTotal} | ${decision} | ${profit} | ${bet}`;
+  });
+
+  const output = lines.join("\n");
+  navigator.clipboard.writeText(output).then(() => {
+    alert("📋 خروجی با فرمت Excel کپی شد!");
+  });
+};
+
   const cardSum = (cards) => {
     const values = cards.map(c => c === "A" ? 11 : ["K", "Q", "J"].includes(c) ? 10 : parseInt(c));
     let total = values.reduce((a, b) => a + b, 0);
