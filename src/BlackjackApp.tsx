@@ -32,7 +32,7 @@ export default function BlackjackApp() {
   const effectiveBet = bet * multiplier;
   const cash = Number(h.cashout);
 
-  if (h.decision === "Cashout") return sum + (cash - bet);
+  if (h.decision === "Cashout") return sum + cash;
   if (h.result === "Win") {
     if (h.decision === "Blackjack") return sum + bet * 1.5;
     return sum + effectiveBet;
@@ -106,7 +106,8 @@ const generateExportText = () => {
 let decisionUsed = h.decision;
 
 if (decisionUsed === "Cashout") {
-  profit = Number(h.cashout) - bet;
+  profit = Number(h.cashout); 
+}
 } else if (h.result === "Win") {
   if (decisionUsed === "Double") profit = bet * 2;
   else if (decisionUsed === "Blackjack") profit = bet * 1.5;
