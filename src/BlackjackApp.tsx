@@ -103,17 +103,22 @@ const generateExportText = () => {
     const effectiveBet = bet * multiplier;
 
     let profit = 0;
-    if (h.decision === "Cashout") {
-      profit = Number(h.cashout) - bet;
-    } else if (h.decision === "Blackjack") {
-      profit = bet * 1.5;
-    } else if (h.result === "Win") {
-      profit = effectiveBet;
-    } else if (h.result === "Lose") {
-      profit = -effectiveBet;
-    }
+let decisionUsed = h.decision;
+
+if (decisionUsed === "Cashout") {
+  profit = Number(h.cashout) - bet;
+} else if (h.result === "Win") {
+  if (decisionUsed === "Double") profit = bet * 2;
+  else if (decisionUsed === "Blackjack") profit = bet * 1.5;
+  else profit = bet;
+} else if (h.result === "Lose") {
+  if (decisionUsed === "Double") profit = -bet * 2;
+  else profit = -bet;
+} else if (h.result === "Push") {
+  profit = 0;
+}
     
-return `${effectiveBet}\t${profit}\t${h.decision}\t${playerTotal}\t${dealerTotal}`;
+return `${effectiveBet}\t${profit}\t${decisionUsed}\t${playerTotal}\t${dealerTotal}`;
 
     
   });
