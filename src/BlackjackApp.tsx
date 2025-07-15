@@ -112,8 +112,9 @@ const generateExportText = () => {
     } else if (h.result === "Lose") {
       profit = -effectiveBet;
     }
-
-    return `${dealerTotal} ${playerTotal} ${h.decision} ${profit} ${effectiveBet}`;
+    
+  return `t${bet}\t${profit}\t${decision}\t${playerTotal}\${dealerTotal}`;
+    
   });
 
   const output = lines.join("\n");
