@@ -150,6 +150,14 @@ export default function BlackjackApp() {
         />
       </div>
 
+      {/* 📈 Count Info */}
+<div style={{ marginTop: 20 }}>
+  <h3>📈 Count Info:</h3>
+  <p>Running Count: {runningCount}</p>
+  <p>True Count: {trueCount.toFixed(2)}</p>
+</div>
+
+
       <div style={{ marginTop: 20 }}>
         <h3>🧠 Decision:</h3>
         {decisions.map(d => (
@@ -188,6 +196,38 @@ export default function BlackjackApp() {
         <p>Running Count: {runningCount}</p>
         <p>True Count: {trueCount}</p>
       </div>
+
+      <hr style={{ margin: '20px 0' }} />
+<div>
+  <h3>📜 Hand History</h3>
+  {hands.map(h => {
+    const bet = Number(h.bet);
+    const isDouble = h.decision === "Double";
+    const isBlackjack = h.decision === "Blackjack";
+    const finalBet = isDouble ? bet * 2 : bet;
+    const blackjackProfit = isBlackjack ? bet * 1.5 : null;
+
+    return (
+      <div key={h.id} style={{ border: '1px solid #ccc', marginBottom: 8, padding: 6 }}>
+        <div>ID: {h.id}</div>
+        <div>Player: {h.player} ({cardSum(h.player.split(" "))})</div>
+        <div>Dealer: {h.dealer} ({cardSum(h.dealer.split(" "))})</div>
+        <div>Bet: €{finalBet}</div>
+        <div>
+          Result: {h.result}
+          {isBlackjack && ` (+€${blackjackProfit})`}
+        </div>
+        <div>Cashout: €{h.cashout}</div>
+        <div>Decision: {h.decision}</div>
+      </div>
+    );
+  })}
+
+  <button onClick={generateExportText} style={{ marginTop: 20 }}>
+    📋 Copy Excel Output
+  </button>
+</div>
+
     </div>
   );
 }
