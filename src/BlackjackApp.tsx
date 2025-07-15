@@ -87,6 +87,10 @@ export default function BlackjackApp() {
     const playerTotal = sum(playerCards);
     const bet = Number(h.bet);
     const decision = h.decision;
+    // در حالت Double، بت دوبرابر می‌شه
+    if (decision === "Double") {
+    bet = bet * 2;
+    }
     let profit = 0;
     if (decision === "Cashout") {
       profit = Number(h.cashout) - bet;
