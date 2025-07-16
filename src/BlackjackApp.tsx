@@ -41,22 +41,31 @@ export default function BlackjackApp() {
     const multiplier = h.decision === "Double" ? 2 : 1;
     return sum + baseBet * multiplier;
   }, 0);
+  
 
-  const totalProfit = hands.reduce((sum, h) => {
-    const bet = Number(h.bet);
-    const multiplier = h.decision === "Double" ? 2 : 1;
-    const effectiveBet = bet * multiplier;
-    const cash = Number(h.cashout);
-    if (h.decision === "Cashout") return sum + cash;
-    if (h.result === "Win") {
-    if (h.decision === "Blackjack") return sum + bet * 2.5; 
-    return sum + effectiveBet * 2; 
+ const totalProfit = hands.reduce((sum, h) => {
+  const bet = Number(h.bet);
+  const multiplier = h.decision === "Double" ? 2 : 1;
+  const effectiveBet = bet * multiplier;
+  const cash = Number(h.cashout);
+
+  if (h.decision === "Cashout") return sum + cash;
+
+  if (h.result === "Win") {
+    if (h.decision === "Blackjack") return sum + bet * 2.5;
+    return sum + effectiveBet * 2;
   }
-    if (h.result === "Lose") return sum;
-    return sum;
-  }, 0);
 
-  const netProfit = profit - totalBet;
+  if (h.result === "Push") {
+    return sum + effectiveBet; // ✅ اصلاح‌شده برای push
+  }
+
+  // result === "Lose"
+  return sum;
+}, 0);
+
+
+  const netProfit = totalProfit - totalBet;
 
   const rtp = totalBet > 0 ? (totalProfit / totalBet * 100).toFixed(1) : "0";
   const avgWin = hands.length > 0 ? (totalProfit / hands.length).toFixed(2) : "0";
@@ -110,21 +119,22 @@ export default function BlackjackApp() {
       const bet = Number(h.bet);
       const multiplier = h.decision === "Double" ? 2 : 1;
       const effectiveBet = bet * multiplier;
-      let profit = 0;
-      let decisionUsed = h.decision;
-      if (decisionUsed === "Cashout") {
-        profit = Number(h.cashout);
-      } else if (h.result === "Win") {
-        if (decisionUsed === "Double") profit = bet * 4;
-        else if (decisionUsed === "Blackjack") profit = bet * 2.5;
-        else profit = bet * 2;
 
-      } else if (h.result === "Lose") {
-      profit = 0;
-      }
-      else if (h.result === "Push") {
-        profit = bet;
-      }
+let profit = 0;
+
+if (h.result === "Push") {
+  profit = effectiveBet; // چه BlackJack باشه چه نه، Push یعنی فقط برگشت بت
+} else if (decisionUsed === "Cashout") {
+  profit = Number(h.cashout);
+} else if (h.result === "Win") {
+  if (decisionUsed === "Double") profit = bet * 4;
+  else if (decisionUsed === "Blackjack") profit = bet * 2.5;
+  else profit = bet * 2;
+} else if (h.result === "Lose") {
+  profit = 0;
+}
+
+      
       const sum = (cards) => {
         const values = cards.map(c => c === "A" ? 11 : ["K", "Q", "J"].includes(c) ? 10 : parseInt(c));
         let total = values.reduce((a, b) => a + b, 0);
