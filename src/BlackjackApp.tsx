@@ -153,6 +153,9 @@ export default function BlackjackApp() {
   return (
 
           <div style={{ marginTop: 10 }}>
+      
+    <div style={{ padding: 20, fontFamily: 'sans-serif' }}>
+
         <button
   onClick={() => {
     if (confirm("Clear all data?")) {
@@ -197,7 +200,7 @@ export default function BlackjackApp() {
       </div>
 
       <hr />
-    <div style={{ padding: 20, fontFamily: 'sans-serif' }}>
+            
       <h2>💰 Bet Amount</h2>
       <input type="number" value={betAmount} onChange={e => setBetAmount(e.target.value)} />
 
