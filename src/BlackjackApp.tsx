@@ -56,8 +56,10 @@ export default function BlackjackApp() {
     return sum;
   }, 0);
 
-  const rtp = totalBet > 0 ? ((totalProfit + totalBet) / totalBet * 100).toFixed(1) : "0";
-  const avgProfit = hands.length > 0 ? (totalProfit / hands.length).toFixed(2) : "0";
+  const netProfit = totalProfit - totalBet;
+
+  const rtp = totalBet > 0 ? (totalProfit / totalBet * 100).toFixed(1) : "0";
+  const avgWin = hands.length > 0 ? (totalProfit / hands.length).toFixed(2) : "0";
 
   const addCard = (card, isDealer) => {
     if (isDealer) setDealerCards(prev => [...prev, card]);
@@ -215,8 +217,9 @@ export default function BlackjackApp() {
       <h3>📊 Stats</h3>
       <p>Total Hands: {hands.length}</p>
       <p>Total Bet: €{totalBet}</p>
-      <p>Total Profit: €{totalProfit}</p>
-      <p>Avg Profit per Hand: €{avgProfit}</p>
+      <p>Total Win: €{totalProfit.toFixed(2)}</p>
+      <p>Net Profit: €{netProfit.toFixed(2)}</p>
+      <p>Avg Win per Hand: €{avgWin.toFixed(2)}</p>
       <p>RTP: {rtp}%</p>
 
       <hr />
