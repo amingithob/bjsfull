@@ -56,7 +56,7 @@ export default function BlackjackApp() {
     return sum;
   }, 0);
 
-  const netProfit = totalProfit - totalBet;
+  const netProfit = profit - totalBet;
 
   const rtp = totalBet > 0 ? (totalProfit / totalBet * 100).toFixed(1) : "0";
   const avgWin = hands.length > 0 ? (totalProfit / hands.length).toFixed(2) : "0";
