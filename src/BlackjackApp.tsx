@@ -1,4 +1,4 @@
-// BlackjackApp.tsx
+// BlackjackApp.tsx (Card Counting + Seen Cards + Export + History)
 import React, { useState } from 'react';
 
 let handId = 1;
@@ -14,18 +14,25 @@ export default function BlackjackApp() {
   });
   const [playerCards, setPlayerCards] = useState([]);
   const [dealerCards, setDealerCards] = useState([]);
+  const [seenCards, setSeenCards] = useState([]);
   const [betAmount, setBetAmount] = useState(DEFAULT_BET);
   const [cashoutValue, setCashoutValue] = useState("");
   const [decision, setDecision] = useState("");
   const [result, setResult] = useState("");
   const [deckCount, setDeckCount] = useState(6);
 
-  const allCards = [...hands.flatMap(h => h.player.split(" ")), ...hands.flatMap(h => h.dealer.split(" "))];
+  const allCards = [
+    ...hands.flatMap(h => h.player.split(" ")),
+    ...hands.flatMap(h => h.dealer.split(" ")),
+    ...seenCards
+  ];
+
   const runningCount = allCards.reduce((sum, card) => {
     if (["2", "3", "4", "5", "6"].includes(card)) return sum + 1;
     if (["10", "J", "Q", "K", "A"].includes(card)) return sum - 1;
     return sum;
   }, 0);
+
   const totalDecksUsed = Math.max(1, allCards.length / 52);
   const trueCount = (runningCount / (deckCount - totalDecksUsed)).toFixed(2);
 
@@ -62,6 +69,9 @@ export default function BlackjackApp() {
     else setPlayerCards(prev => prev.filter((_, i) => i !== index));
   };
 
+  const addSeenCard = (card) => setSeenCards(prev => [...prev, card]);
+  const removeSeenCard = (index) => setSeenCards(prev => prev.filter((_, i) => i !== index));
+
   const handleSubmit = () => {
     if (!playerCards.length || !dealerCards.length || !betAmount || !decision || !result) return;
     const newHands = [...hands, {
@@ -82,47 +92,6 @@ export default function BlackjackApp() {
     setResult("");
   };
 
-  const generateExportText = () => {
-    const hands = JSON.parse(localStorage.getItem("blackjack_hands") || "[]");
-    const lines = hands.map((h) => {
-      const dealerCards = h.dealer.split(" ");
-      const playerCards = h.player.split(" ");
-      const sum = (cards) => {
-        const values = cards.map(c => c === "A" ? 11 : ["K", "Q", "J"].includes(c) ? 10 : parseInt(c));
-        let total = values.reduce((a, b) => a + b, 0);
-        let aces = cards.filter(c => c === "A").length;
-        while (total > 21 && aces > 0) { total -= 10; aces--; }
-        return total;
-      };
-
-      const dealerTotal = sum(dealerCards);
-      const playerTotal = sum(playerCards);
-      const bet = Number(h.bet);
-      const multiplier = h.decision === "Double" ? 2 : 1;
-      const effectiveBet = bet * multiplier;
-
-      let profit = 0;
-      if (h.decision === "Cashout") profit = Number(h.cashout);
-      else if (h.result === "Win") profit = h.decision === "Blackjack" ? bet * 1.5 : effectiveBet;
-      else if (h.result === "Lose") profit = -effectiveBet;
-      else if (h.result === "Push") profit = 0;
-
-      const decisionLabel = h.result === "Push" ? "Push" : h.decision;
-      let tag = "";
-      if (h.result === "Push") tag = "push";
-      else if (h.decision === "Double") tag = h.result === "Win" ? "ddw" : h.result === "Lose" ? "ddl" : "ddp";
-      else if (h.decision === "Cashout") tag = h.result === "Win" ? "cow" : "col";
-      else if (h.decision === "Blackjack") tag = "bj";
-      else tag = h.result.toLowerCase();
-
-      return `${effectiveBet}\t${profit}\t${decisionLabel}\t${playerTotal}\t${dealerTotal}\t${tag}`;
-    });
-
-    navigator.clipboard.writeText(lines.join("\n")).then(() => {
-      alert("📋 خروجی کپی شد!");
-    });
-  };
-
   const cardSum = (cards) => {
     const values = cards.map(c => c === "A" ? 11 : ["K", "Q", "J"].includes(c) ? 10 : parseInt(c));
     let total = values.reduce((a, b) => a + b, 0);
@@ -131,61 +100,117 @@ export default function BlackjackApp() {
     return total;
   };
 
+  const generateExportText = () => {
+    const hands = JSON.parse(localStorage.getItem("blackjack_hands") || "[]");
+    const lines = hands.map((h) => {
+      const dealerCards = h.dealer.split(" ");
+      const playerCards = h.player.split(" ");
+      const bet = Number(h.bet);
+      const multiplier = h.decision === "Double" ? 2 : 1;
+      const effectiveBet = bet * multiplier;
+      let profit = 0;
+      let decisionUsed = h.decision;
+      if (decisionUsed === "Cashout") {
+        profit = Number(h.cashout);
+      } else if (h.result === "Win") {
+        if (decisionUsed === "Double") profit = bet * 2;
+        else if (decisionUsed === "Blackjack") profit = bet * 1.5;
+        else profit = bet;
+      } else if (h.result === "Lose") {
+        if (decisionUsed === "Double") profit = -bet * 2;
+        else profit = -bet;
+      } else if (h.result === "Push") {
+        profit = 0;
+      }
+      const sum = (cards) => {
+        const values = cards.map(c => c === "A" ? 11 : ["K", "Q", "J"].includes(c) ? 10 : parseInt(c));
+        let total = values.reduce((a, b) => a + b, 0);
+        let aces = cards.filter(c => c === "A").length;
+        while (total > 21 && aces > 0) { total -= 10; aces--; }
+        return total;
+      };
+      const dealerTotal = sum(dealerCards);
+      const playerTotal = sum(playerCards);
+      const decisionLabel = h.result === "Push" ? "Push" : h.decision;
+      let tag = "";
+      if (h.result === "Push") tag = "push";
+      else if (h.decision === "Double") tag = h.result === "Win" ? "ddw" : h.result === "Lose" ? "ddl" : "ddp";
+      else if (h.decision === "Cashout") tag = h.result === "Win" ? "cow" : "col";
+      else if (h.decision === "Blackjack") tag = "bj";
+      else if (h.result === "Win") tag = "win";
+      else if (h.result === "Lose") tag = "los";
+      else tag = decisionLabel.toLowerCase();
+
+      return `${effectiveBet}\t${profit}\t${decisionLabel}\t${playerTotal}\t${dealerTotal}\t${tag}`;
+    });
+    const output = lines.join("\n");
+    navigator.clipboard.writeText(output).then(() => alert("📋 خروجی کپی شد!"));
+  };
+
   return (
     <div style={{ padding: 20, fontFamily: 'sans-serif' }}>
-      <h2>🎲 Blackjack Tracker</h2>
-
-      <div style={{ marginBottom: 12 }}>
-        <button onClick={() => {
-          if (confirm("Clear all data?")) {
-            setHands([]); localStorage.removeItem("blackjack_hands"); handId = 1;
-          }
-        }} style={{ marginRight: 8 }}>🗑️ New Session</button>
-
-        <button onClick={generateExportText}>📋 Copy Excel Output</button>
-      </div>
-
-      <h3>💰 Bet Amount</h3>
-      <input type="number" value={betAmount} onChange={(e) => setBetAmount(e.target.value)} />
+      <h2>💰 Bet Amount</h2>
+      <input type="number" value={betAmount} onChange={e => setBetAmount(e.target.value)} />
 
       <h3>🧮 Deck Count</h3>
-      <input type="number" value={deckCount} onChange={(e) => setDeckCount(Number(e.target.value))} min={1} max={10} />
-
-      <h3>📈 Count Info:</h3>
-      <p>Running Count: {runningCount}</p>
-      <p>True Count: {trueCount}</p>
-
-      <h3>🎴 Player Cards ({cardSum(playerCards)}):</h3>
-      <div>{playerCards.map((c, i) => <button key={i} onClick={() => removeCard(i, false)}>{c} ❌</button>)}</div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-        {cardValues.map(c => <button key={c} onClick={() => addCard(c, false)}>{c}</button>)}
-      </div>
-
-      <h3>🃏 Dealer Cards ({cardSum(dealerCards)}):</h3>
-      <div>{dealerCards.map((c, i) => <button key={i} onClick={() => removeCard(i, true)}>{c} ❌</button>)}</div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-        {cardValues.map(c => <button key={c} onClick={() => addCard(c, true)}>{c}</button>)}
-      </div>
-
-      <h3>💸 Cashout (optional):</h3>
-      <input type="number" value={cashoutValue} onChange={(e) => setCashoutValue(e.target.value)} />
-
-      <h3>🧠 Decision:</h3>
-      {decisions.map(d => (
-        <button key={d} onClick={() => setDecision(d)} style={{ backgroundColor: decision === d ? '#4CAF50' : '' }}>{d}</button>
-      ))}
-
-      <h3>🎯 Result:</h3>
-      {results.map(r => (
-        <button key={r} onClick={() => setResult(r)} style={{ backgroundColor: result === r ? '#2196F3' : '' }}>{r}</button>
-      ))}
+      <input type="number" value={deckCount} onChange={e => setDeckCount(Number(e.target.value))} />
 
       <div style={{ marginTop: 10 }}>
-        <button onClick={handleSubmit}>✅ Submit Hand</button>
+        <button onClick={() => {
+          if (confirm("Clear all data?")) {
+            setHands([]);
+            localStorage.removeItem("blackjack_hands");
+            handId = 1;
+            setSeenCards([]);
+          }
+        }}>🗑️ New Session</button>
+        <button onClick={generateExportText} style={{ marginLeft: 10 }}>📋 Copy Excel Output</button>
       </div>
 
       <hr />
 
+      <div>
+        <h3>🎴 Player Cards ({cardSum(playerCards)}):</h3>
+        <div>{playerCards.map((c, i) => <button key={i} onClick={() => removeCard(i, false)}>{c} ❌</button>)}</div>
+        {cardValues.map(c => <button key={c} onClick={() => addCard(c, false)}>{c}</button>)}
+      </div>
+
+      <div>
+        <h3>🃏 Dealer Cards ({cardSum(dealerCards)}):</h3>
+        <div>{dealerCards.map((c, i) => <button key={i} onClick={() => removeCard(i, true)}>{c} ❌</button>)}</div>
+        {cardValues.map(c => <button key={c} onClick={() => addCard(c, true)}>{c}</button>)}
+      </div>
+
+      <div>
+        <h3>👁️ Seen Cards:</h3>
+        <div>{seenCards.map((c, i) => <button key={i} onClick={() => removeSeenCard(i)}>{c} ❌</button>)}</div>
+        {cardValues.map(c => <button key={c} onClick={() => addSeenCard(c)}>{c}</button>)}
+      </div>
+
+      <div>
+        <h3>💸 Cashout (optional)</h3>
+        <input type="number" value={cashoutValue} onChange={e => setCashoutValue(e.target.value)} />
+      </div>
+
+      <div>
+        <h3>📈 Count Info:</h3>
+        <p>Running Count: {runningCount}</p>
+        <p>True Count: {trueCount}</p>
+      </div>
+
+      <div>
+        <h3>🧠 Decision:</h3>
+        {decisions.map(d => <button key={d} onClick={() => setDecision(d)}>{d}</button>)}
+      </div>
+
+      <div>
+        <h3>🎯 Result:</h3>
+        {results.map(r => <button key={r} onClick={() => setResult(r)}>{r}</button>)}
+      </div>
+
+      <button onClick={handleSubmit}>✅ Submit Hand</button>
+
+      <hr />
       <h3>📊 Stats</h3>
       <p>Total Hands: {hands.length}</p>
       <p>Total Bet: €{totalBet}</p>
@@ -201,9 +226,9 @@ export default function BlackjackApp() {
           <div>Player: {h.player} ({cardSum(h.player.split(" "))})</div>
           <div>Dealer: {h.dealer} ({cardSum(h.dealer.split(" "))})</div>
           <div>Bet: €{h.decision === "Double" ? Number(h.bet) * 2 : h.bet}</div>
-          <div>Result: {h.result} {h.decision === "Blackjack" && `(+€${Number(h.bet) * 1.5})`}</div>
           <div>Cashout: €{h.cashout}</div>
           <div>Decision: {h.decision}</div>
+          <div>Result: {h.result}</div>
         </div>
       ))}
     </div>
