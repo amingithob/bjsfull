@@ -217,9 +217,9 @@ export default function BlackjackApp() {
       <h3>📊 Stats</h3>
       <p>Total Hands: {hands.length}</p>
       <p>Total Bet: €{totalBet}</p>
-      <p>Total Win: €{totalProfit.toFixed(2)}</p>
+      <p>Total Win: €{totalProfit}</p>
       <p>Net Profit: €{netProfit.toFixed(2)}</p>
-      <p>Avg Win per Hand: €{avgWin.toFixed(2)}</p>
+      <p>Avg Win per Hand: €{avgWin}</p>
       <p>RTP: {rtp}%</p>
 
       <hr />
