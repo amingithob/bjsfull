@@ -147,7 +147,7 @@ export default function BlackjackApp() {
       return `${effectiveBet}\t${profit}\t${decisionLabel}\t${playerTotal}\t${dealerTotal}\t${tag}`;
     });
     const output = lines.join("\n");
-    navigator.clipboard.writeText(output).then(() => alert("📋 خروجی کپی شد!"));
+    navigator.clipboard.writeText(output).then(() => alert("📋 Done!"));
   };
 
   return (
@@ -204,11 +204,14 @@ export default function BlackjackApp() {
       <h2>💰 Bet Amount</h2>
       <input type="number" value={betAmount} onChange={e => setBetAmount(e.target.value)} />
 
+             <hr />
+            
       <h3>🧮 Deck Count</h3>
       <input type="number" value={deckCount} onChange={e => setDeckCount(Number(e.target.value))} />
 
 
-
+ <hr />
+            
       <div>
         <h3>🎴 Player Cards ({cardSum(playerCards)}):</h3>
         <div>{playerCards.map((c, i) => <button key={i} onClick={() => removeCard(i, false)}>{c} ❌</button>)}</div>
@@ -226,18 +229,18 @@ export default function BlackjackApp() {
         <div>{seenCards.map((c, i) => <button key={i} onClick={() => removeSeenCard(i)}>{c} ❌</button>)}</div>
         {cardValues.map(c => <button key={c} onClick={() => addSeenCard(c)}>{c}</button>)}
       </div>
-
+ <hr />
       <div>
         <h3>💸 Cashout (optional)</h3>
         <input type="number" value={cashoutValue} onChange={e => setCashoutValue(e.target.value)} />
       </div>
-
+ <hr />
       <div>
         <h3>📈 Count Info:</h3>
         <p>Running Count: {runningCount}</p>
         <p>True Count: {trueCount}</p>
       </div>
-
+ <hr />
       <div>
         <h3>🧠 Decision:</h3>
         {decisions.map(d => (
@@ -259,7 +262,7 @@ export default function BlackjackApp() {
 ))}
 
       </div>
-
+ <hr />
       <div>
         <h3>🎯 Result:</h3>
         {results.map(r => (
