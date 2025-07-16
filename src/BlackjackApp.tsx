@@ -52,7 +52,7 @@ export default function BlackjackApp() {
       if (h.decision === "Blackjack") return sum + bet * 1.5;
       return sum + effectiveBet;
     }
-    if (h.result === "Lose") return sum - effectiveBet;
+    if (h.result === "Lose") return sum;
     return sum;
   }, 0);
 
@@ -117,9 +117,9 @@ export default function BlackjackApp() {
         else if (decisionUsed === "Blackjack") profit = bet * 1.5;
         else profit = bet;
       } else if (h.result === "Lose") {
-        if (decisionUsed === "Double") profit = -bet * 2;
-        else profit = -bet;
-      } else if (h.result === "Push") {
+      profit = 0;
+      }
+      else if (h.result === "Push") {
         profit = 0;
       }
       const sum = (cards) => {
