@@ -49,9 +49,9 @@ export default function BlackjackApp() {
     const cash = Number(h.cashout);
     if (h.decision === "Cashout") return sum + cash;
     if (h.result === "Win") {
-      if (h.decision === "Blackjack") return sum + bet * 1.5;
-      return sum + effectiveBet;
-    }
+    if (h.decision === "Blackjack") return sum + bet * 2.5; 
+    return sum + effectiveBet * 2; 
+  }
     if (h.result === "Lose") return sum;
     return sum;
   }, 0);
@@ -113,9 +113,10 @@ export default function BlackjackApp() {
       if (decisionUsed === "Cashout") {
         profit = Number(h.cashout);
       } else if (h.result === "Win") {
-        if (decisionUsed === "Double") profit = bet * 2;
-        else if (decisionUsed === "Blackjack") profit = bet * 1.5;
-        else profit = bet;
+        if (decisionUsed === "Double") profit = bet * 4;
+        else if (decisionUsed === "Blackjack") profit = bet * 2.5;
+        else profit = bet * 2;
+
       } else if (h.result === "Lose") {
       profit = 0;
       }
