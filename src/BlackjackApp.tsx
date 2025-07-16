@@ -203,12 +203,52 @@ export default function BlackjackApp() {
 
       <div>
         <h3>🧠 Decision:</h3>
-        {decisions.map(d => <button key={d} onClick={() => setDecision(d)}>{d}</button>)}
+        {decisions.map(d => (
+  <button
+    key={d}
+    onClick={() => setDecision(d)}
+    style={{
+      margin: '4px',
+      padding: '6px 12px',
+      borderRadius: 4,
+      border: '1px solid #ccc',
+      cursor: 'pointer',
+      backgroundColor: decision === d ? "#795548" : "#f0f0f0",  // رنگ قهوه‌ای ملایم برای انتخاب‌شده
+      color: decision === d ? "white" : "black"
+    }}
+  >
+    {d}
+  </button>
+))}
+
       </div>
 
       <div>
         <h3>🎯 Result:</h3>
-        {results.map(r => <button key={r} onClick={() => setResult(r)}>{r}</button>)}
+        {results.map(r => (
+  <button
+    key={r}
+    onClick={() => setResult(r)}
+    style={{
+      margin: '4px',
+      padding: '6px 12px',
+      borderRadius: 4,
+      border: '1px solid #ccc',
+      cursor: 'pointer',
+      backgroundColor:
+        result === r
+          ? r === "Win" ? "#4CAF50"
+          : r === "Lose" ? "#f44336"
+          : r === "Push" ? "#2196F3"
+          : "#ddd"
+        : "#f0f0f0",
+      color: result === r ? "white" : "black"
+    }}
+  >
+    {r}
+  </button>
+))}
+
       </div>
 
       <button onClick={handleSubmit}>✅ Submit Hand</button>
