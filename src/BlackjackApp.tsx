@@ -190,22 +190,7 @@ if (h.result === "Push") {
   🗑️ New Session
 </button>
         
-       <button
-  onClick={generateExportText}
-  style={{
-    padding: '8px 16px',
-    backgroundColor: '#3f51b5',
-    color: 'white',
-    border: 'none',
-    borderRadius: 6,
-    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    marginTop: 16
-  }}
->
-  📋 Copy Output
-</button>
+
 
       </div>
 
@@ -341,6 +326,24 @@ if (h.result === "Push") {
           <div>Result: {h.result}</div>
         </div>
       ))}
+            <button
+  onClick={generateExportText}
+  style={{
+    padding: '10px 20px',
+    backgroundColor: '#3f51b5',
+    color: 'white',
+    border: 'none',
+    borderRadius: 6,
+    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    marginTop: 30,
+    marginBottom: 40
+  }}
+>
+  📋 Copy Output
+</button>
+
     </div>
   );
 }
