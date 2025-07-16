@@ -151,14 +151,8 @@ export default function BlackjackApp() {
   };
 
   return (
-    <div style={{ padding: 20, fontFamily: 'sans-serif' }}>
-      <h2>💰 Bet Amount</h2>
-      <input type="number" value={betAmount} onChange={e => setBetAmount(e.target.value)} />
 
-      <h3>🧮 Deck Count</h3>
-      <input type="number" value={deckCount} onChange={e => setDeckCount(Number(e.target.value))} />
-
-      <div style={{ marginTop: 10 }}>
+          <div style={{ marginTop: 10 }}>
         <button
   onClick={() => {
     if (confirm("Clear all data?")) {
@@ -203,6 +197,14 @@ export default function BlackjackApp() {
       </div>
 
       <hr />
+    <div style={{ padding: 20, fontFamily: 'sans-serif' }}>
+      <h2>💰 Bet Amount</h2>
+      <input type="number" value={betAmount} onChange={e => setBetAmount(e.target.value)} />
+
+      <h3>🧮 Deck Count</h3>
+      <input type="number" value={deckCount} onChange={e => setDeckCount(Number(e.target.value))} />
+
+
 
       <div>
         <h3>🎴 Player Cards ({cardSum(playerCards)}):</h3>
