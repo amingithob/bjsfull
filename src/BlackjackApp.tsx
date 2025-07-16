@@ -123,7 +123,7 @@ export default function BlackjackApp() {
       profit = 0;
       }
       else if (h.result === "Push") {
-        profit = 0;
+        profit = bet;
       }
       const sum = (cards) => {
         const values = cards.map(c => c === "A" ? 11 : ["K", "Q", "J"].includes(c) ? 10 : parseInt(c));
