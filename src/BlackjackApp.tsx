@@ -159,15 +159,47 @@ export default function BlackjackApp() {
       <input type="number" value={deckCount} onChange={e => setDeckCount(Number(e.target.value))} />
 
       <div style={{ marginTop: 10 }}>
-        <button onClick={() => {
-          if (confirm("Clear all data?")) {
-            setHands([]);
-            localStorage.removeItem("blackjack_hands");
-            handId = 1;
-            setSeenCards([]);
-          }
-        }}>🗑️ New Session</button>
-        <button onClick={generateExportText} style={{ marginLeft: 10 }}>📋 Copy Excel Output</button>
+        <button
+  onClick={() => {
+    if (confirm("Clear all data?")) {
+      setHands([]);
+      localStorage.removeItem("blackjack_hands");
+      handId = 1;
+      setSeenCards([]);
+    }
+  }}
+  style={{
+    padding: '8px 16px',
+    backgroundColor: '#f44336',
+    color: 'white',
+    border: 'none',
+    borderRadius: 6,
+    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    marginLeft: 10
+  }}
+>
+  🗑️ New Session
+</button>
+        
+       <button
+  onClick={generateExportText}
+  style={{
+    padding: '8px 16px',
+    backgroundColor: '#3f51b5',
+    color: 'white',
+    border: 'none',
+    borderRadius: 6,
+    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    marginTop: 16
+  }}
+>
+  📋 Copy Output
+</button>
+
       </div>
 
       <hr />
@@ -251,7 +283,23 @@ export default function BlackjackApp() {
 
       </div>
 
-      <button onClick={handleSubmit}>✅ Submit Hand</button>
+      <button
+  onClick={handleSubmit}
+  style={{
+    padding: '10px 20px',
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    border: 'none',
+    borderRadius: 6,
+    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    marginTop: 10
+  }}
+>
+  ✅ Submit Hand
+</button>
+
 
       <hr />
       <h3>📊 Stats</h3>
